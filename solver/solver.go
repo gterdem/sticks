@@ -188,6 +188,9 @@ func createValidInput(input string) string {
 	return ""
 }
 func printResults(sticks []Stick) {
+	if len(sticks) == 0 {
+		fmt.Print("( )")
+	}
 	for index, item := range sticks {
 		startHourStr := "00"
 		if item.startH > 0 {
@@ -223,7 +226,7 @@ func printResults(sticks []Stick) {
 func getResults() []Stick {
 	for _, item := range lightSticks {
 		if item.status != stickhelper.Enum.Diminished {
-			if item.startH != item.endH && item.startM != item.endM { //Left over stick
+			if item.startH != item.endH || item.startM != item.endM { //Left over stick
 				resultSticks = append(resultSticks, *item)
 			}
 
