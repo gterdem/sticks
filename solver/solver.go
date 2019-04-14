@@ -111,9 +111,9 @@ func overlapSticksOuterBoundries() {
 			if dark.status == stickhelper.Enum.Growing {
 				if isDarkEndPointBetweenLightLimits(light, dark) {
 					//merge light sticks to ease further merging
-					lightSticks[j-1].endH = lightSticks[j].endH
-					lightSticks[j-1].endM = lightSticks[j].endM
-					diminishLightStickAtIndex(j)
+					lightSticks[j].startH = lightSticks[j-1].startH
+					lightSticks[j].startM = lightSticks[j-1].startM
+					diminishLightStickAtIndex(j - 1)
 				}
 			}
 		}

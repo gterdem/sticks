@@ -14,6 +14,8 @@ func main() {
 	// input := "(9:00-10:00) minus (9:00-9:30)" // ok
 	// input := "(01:00-03:00, 05:00-07:00) - (02:00-06:00)" // extra boundry test
 	input := "(00:20-01:00, 02:00-03:00, 04:00-05:00) - (00:30-02:30, 02:45-04:30)" // extra boundry test-2
+	// got		: (00:20-00:30, 00:00-00:30, 00:00-00:30, 2:30-2:45, 2:30-2:45, 4:30-5:00)
+	// expected : (00:20-00:30, 2:30-2:45, 4:30-5:00)
 	results := solver.Solve(input)
 	resultStr := solver.StringifyResult(results)
 	fmt.Println(resultStr)
