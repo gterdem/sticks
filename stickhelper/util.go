@@ -1,4 +1,4 @@
-package stringhelper
+package stickhelper
 
 import "strings"
 
