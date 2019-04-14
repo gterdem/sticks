@@ -29,7 +29,7 @@ func Solve(input string) []Stick {
 func StringifyResult(array []Stick) string {
 	var str strings.Builder
 	if len(array) == 0 {
-		str.WriteString("( )")
+		str.WriteString("()")
 		return str.String()
 	}
 	for index, item := range array {
@@ -71,9 +71,14 @@ func StringifyResult(array []Stick) string {
 }
 
 func createSticksFromInput(input string) {
-	before := stickhelper.Before(input, " - ")
-	after := stickhelper.After(input, " - ")
-	fmt.Print(before, " - ", after, " = ")
+	validInput := createValidInput(input)
+	before := stickhelper.Before(validInput, " - ")
+	after := stickhelper.After(validInput, " - ")
+	if before == "" || after == "" {
+		panic("Input format is invalid!")
+	}
+
+	// fmt.Print(before, " - ", after, " = ")
 	createTheSticks(before, true)
 	createTheSticks(after, false)
 }
@@ -157,7 +162,7 @@ func isOverlapping(light *Stick, dark *Stick) bool {
 	}
 	isStartOverlaped := false
 	isEndOverlaped := false
-	if dark.startH > light.startH {
+	if dark.startH > light.startH && dark.startH < dark.endH {
 		isStartOverlaped = true
 	} else if dark.startH == light.startH {
 		if dark.startM >= light.startM {
@@ -222,13 +227,18 @@ func createStick(inputStr string) *Stick {
 }
 
 func createValidInput(input string) string {
+	var str strings.Builder
 	newDinput := strings.TrimSpace(input)
 	if strings.Contains(newDinput, "minus") {
 		splitted := strings.Split(newDinput, "minus")
-		first := splitted[0]
-		return first
+		leftSide := strings.TrimSpace(splitted[0])
+		rightSide := strings.TrimSpace(splitted[1])
+		str.WriteString(leftSide)
+		str.WriteString(" - ")
+		str.WriteString(rightSide)
+		return str.String()
 	}
-	return ""
+	return input
 }
 
 //PrintResults prints the result array in sampled string format - Obsolute
