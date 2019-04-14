@@ -8,6 +8,7 @@ type list struct {
 	Lit        Alias
 	Touched    Alias
 	Diminished Alias
+	Growing    Alias
 }
 
 // Enum for public use
@@ -15,4 +16,5 @@ var Enum = &list{
 	Lit:        0,
 	Touched:    1,
 	Diminished: 2,
+	Growing:    3,
 }
