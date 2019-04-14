@@ -1,6 +1,8 @@
 package stickhelper
 
-import "strings"
+import (
+	"strings"
+)
 
 // After used to get substring after a string.
 func After(value string, a string) string {
@@ -25,3 +27,8 @@ func Before(value string, a string) string {
 }
 
 /* https://www.dotnetperls.com/between-before-after-go */
+
+// StringifyResult is used to return sampled result as string ==> I need to move Stick type to here and that required quite a lot refactoring for public accessors etc
+// func StringifyResult(array []Stick) string {
+// 	return ""
+// }

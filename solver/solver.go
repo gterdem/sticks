@@ -19,20 +19,63 @@ var darkSticks = []*Stick{}
 var resultSticks = []Stick{}
 
 //Solve method solves the stick problem
-func Solve(input string) {
+func Solve(input string) []Stick {
 	createSticksFromInput(input)
+	overlapSticks()
+	return getResults()
+}
+
+// StringifyResult is used to return sampled result as string ==> I need to move Stick type to but that required quite a lot refactoring for public accessors etc
+func StringifyResult(array []Stick) string {
+	var str strings.Builder
+	if len(array) == 0 {
+		str.WriteString("( )")
+		return str.String()
+	}
+	for index, item := range array {
+		startHourStr := "00"
+		if item.startH > 0 {
+			startHourStr = strconv.Itoa(int(item.startH))
+		}
+		startMinuteStr := "00"
+		if item.startM > 0 {
+			startMinuteStr = strconv.Itoa(int(item.startM))
+		}
+		endHourStr := "00"
+		if item.endH > 0 {
+			endHourStr = strconv.Itoa(int(item.endH))
+		}
+		endMinuteStr := "00"
+		if item.endM > 0 {
+			endMinuteStr = strconv.Itoa(int(item.endM))
+		}
+		if index == 0 {
+			str.WriteString("(")
+		}
+		str.WriteString(startHourStr)
+		str.WriteString(":")
+		str.WriteString(startMinuteStr)
+		str.WriteString("-")
+		str.WriteString(endHourStr)
+		str.WriteString(":")
+		str.WriteString(endMinuteStr)
+		if index != len(array)-1 {
+			str.WriteString(", ")
+		}
+
+		if index == len(array)-1 {
+			str.WriteString(")")
+		}
+	}
+	return str.String()
 }
 
 func createSticksFromInput(input string) {
 	before := stickhelper.Before(input, " - ")
 	after := stickhelper.After(input, " - ")
-	fmt.Print(before, " - ", after)
+	fmt.Print(before, " - ", after, " = ")
 	createTheSticks(before, true)
 	createTheSticks(after, false)
-
-	overlapSticks()
-	resultSticks = getResults()
-	printResults(resultSticks)
 }
 
 // func overlapSticks(lightSticks []*Stick, darkSticks []*Stick) {
@@ -187,40 +230,10 @@ func createValidInput(input string) string {
 	}
 	return ""
 }
-func printResults(sticks []Stick) {
-	if len(sticks) == 0 {
-		fmt.Print("( )")
-	}
-	for index, item := range sticks {
-		startHourStr := "00"
-		if item.startH > 0 {
-			startHourStr = strconv.Itoa(int(item.startH))
-		}
-		startMinuteStr := "00"
-		if item.startM > 0 {
-			startMinuteStr = strconv.Itoa(int(item.startM))
-		}
-		endHourStr := "00"
-		if item.endH > 0 {
-			endHourStr = strconv.Itoa(int(item.endH))
-		}
-		endMinuteStr := "00"
-		if item.endM > 0 {
-			endMinuteStr = strconv.Itoa(int(item.endM))
-		}
-		if index == 0 {
-			fmt.Print("(")
-		}
-		fmt.Print(startHourStr, ":", startMinuteStr, "-", endHourStr, ":", endMinuteStr)
-		if index != len(sticks)-1 {
-			fmt.Print(", ")
-		}
 
-		if index == len(sticks)-1 {
-			fmt.Print(")")
-		}
-	}
-
+//PrintResults prints the result array in sampled string format - Obsolute
+func PrintResults(sticks []Stick) {
+	fmt.Print("Result: ", StringifyResult(sticks))
 }
 
 func getResults() []Stick {
