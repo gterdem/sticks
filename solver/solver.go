@@ -96,6 +96,13 @@ func overlapSticks() {
 }
 
 func merge(light *Stick, dark *Stick, index int) {
+	// Handle overnight times like 23:00-02:00
+	if dark.startH > dark.endH {
+		dark.endH = dark.endH + 24
+	}
+	if light.startH > light.endH {
+		light.endH = light.endH + 24
+	}
 	if dark.startH == light.startH {
 		if dark.startM > light.startM {
 			if dark.endH <= light.endH {
@@ -108,7 +115,6 @@ func merge(light *Stick, dark *Stick, index int) {
 				lightSticks[index].endM = dark.startM
 				lightSticks[index].status = stickhelper.Enum.Touched
 			}
-
 		}
 	} else if dark.startH > light.startH {
 		if dark.endH == light.endH {
@@ -123,7 +129,6 @@ func merge(light *Stick, dark *Stick, index int) {
 			} else {
 				//light stick diminished completely
 				lightSticks[index].status = stickhelper.Enum.Diminished
-
 			}
 		} else if dark.endH > light.endH {
 			//diminish the original light stick to the left
@@ -139,7 +144,9 @@ func merge(light *Stick, dark *Stick, index int) {
 		if dark.startH >= light.startH {
 			// Stick divided to two
 			extraStick := &Stick{startH: dark.endH, startM: dark.endM, endH: light.endH, endM: light.endM, status: stickhelper.Enum.Lit}
-			lightSticks = append(lightSticks, extraStick)
+			if !isAlreadyExist(extraStick) {
+				lightSticks = append(lightSticks, extraStick)
+			}
 			//diminish the original light stick to the left
 			lightSticks[index].endH = dark.startH
 			lightSticks[index].endM = dark.startM
@@ -149,10 +156,6 @@ func merge(light *Stick, dark *Stick, index int) {
 			lightSticks[index].startM = dark.endM
 			lightSticks[index].status = stickhelper.Enum.Touched
 		}
-		// if dark.endM < light.endM {
-		//diminish the original light stick to the right
-
-		// }
 	}
 }
 func isOverlapping(light *Stick, dark *Stick) bool {
@@ -162,7 +165,7 @@ func isOverlapping(light *Stick, dark *Stick) bool {
 	}
 	isStartOverlaped := false
 	isEndOverlaped := false
-	if dark.startH > light.startH && dark.startH < dark.endH {
+	if dark.startH > light.startH && dark.startH <= dark.endH {
 		isStartOverlaped = true
 	} else if dark.startH == light.startH {
 		if dark.startM >= light.startM {
@@ -186,7 +189,14 @@ func isOverlapping(light *Stick, dark *Stick) bool {
 	}
 	return isStartOverlaped && isEndOverlaped
 }
-
+func isAlreadyExist(stick *Stick) bool {
+	for _, item := range lightSticks {
+		if stick.startH == item.startH && stick.startM == item.startM && stick.endH == item.endH && stick.endM == item.endM && stick.status == item.status {
+			return true
+		}
+	}
+	return false
+}
 func createTheSticks(input string, addToLightSticks bool) {
 	removedParentheses := strings.Replace(input, "(", "", -1)
 	removedParentheses = strings.Replace(removedParentheses, ")", "", -1)
@@ -247,16 +257,26 @@ func PrintResults(sticks []Stick) {
 }
 
 func getResults() []Stick {
+	hasOvernightValue := false
 	for _, item := range lightSticks {
 		if item.status != stickhelper.Enum.Diminished {
 			if item.startH != item.endH || item.startM != item.endM { //Left over stick
+				if item.startH > 24 || item.endH > 24 {
+					hasOvernightValue = true
+				}
+				item.startH = item.startH % 24
+				item.endH = item.endH % 24
 				resultSticks = append(resultSticks, *item)
 			}
 
 		}
 	}
-	sort.Slice(resultSticks, func(i, j int) bool {
-		return resultSticks[i].startH < resultSticks[j].startH
-	})
+	// No need to sort overnight times like (23:00-23:30, 02:00-03:00)
+	if !hasOvernightValue {
+		sort.Slice(resultSticks, func(i, j int) bool {
+			return resultSticks[i].startH < resultSticks[j].startH
+		})
+	}
+
 	return resultSticks
 }

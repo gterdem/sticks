@@ -123,3 +123,23 @@ func TestExtra6(t *testing.T) {
 		t.Errorf("Result incorrect, got: %v, wanted: %v", resultStr, want)
 	}
 }
+
+//TestExtra7 "(00:00-3:00) minus (00:00-02:00) = (02:00-03:00)"
+func TestExtra7(t *testing.T) {
+	input := "(00:00-3:00) minus (00:00-02:00)"
+	want := "(2:00-3:00)"
+	resultStr := StringifyResult(Solve(input))
+	if resultStr != want {
+		t.Errorf("Result incorrect, got: %v, wanted: %v", resultStr, want)
+	}
+}
+
+//TestExtra8 "(00:00-3:00) minus (02:00-03:00) = (00:00-02:00)"
+func TestExtra8(t *testing.T) {
+	input := "(00:00-3:00) minus (02:00-03:00)"
+	want := "(00:00-2:00)"
+	resultStr := StringifyResult(Solve(input))
+	if resultStr != want {
+		t.Errorf("Result incorrect, got: %v, wanted: %v", resultStr, want)
+	}
+}
