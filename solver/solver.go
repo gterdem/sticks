@@ -22,6 +22,9 @@ var resultSticks = []Stick{}
 func Solve(input string) []Stick {
 	createSticksFromInput(input)
 	overlapSticks()
+	//this needs to check between stick bounderies for inputs such as:
+	// (01:00-03:00, 05:00:07) - (02:00:06) etc
+	overlapSticksOuterBoundries()
 	return getResults()
 }
 
@@ -91,6 +94,21 @@ func overlapSticks() {
 			if hasOverlap {
 				merge(lightSticks[i], darkSticks[j], i)
 			}
+		}
+	}
+}
+func overlapSticksOuterBoundries() {
+	// first sort the light array
+	for i := 0; i < len(darkSticks); i++ {
+		// hasStartOverlap := false
+		// hasEndOverlap := false
+		dark := darkSticks[i]
+		for j := 0; j < len(lightSticks); j++ {
+			light := lightSticks[j]
+			if dark.startH > light.startH || (dark.startH == light.startH && dark.startM > light.startM) {
+
+			}
+
 		}
 	}
 }
