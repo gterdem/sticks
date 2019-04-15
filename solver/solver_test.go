@@ -4,8 +4,8 @@ import (
 	"testing"
 )
 
-//TestSample1 "(9:00-10:00) - (9:00-9:30) = (9:30-10:00)"
-func TestSample1(t *testing.T) {
+//TestGivenSample1 "(9:00-10:00) - (9:00-9:30) = (9:30-10:00)"
+func TestGivenSample1(t *testing.T) {
 	input := "(9:00-10:00) - (9:00-9:30)"
 	want := "(9:30-10:00)"
 	resultStr := StringifyResult(Solve(input))
@@ -14,8 +14,8 @@ func TestSample1(t *testing.T) {
 	}
 }
 
-//TestSample1_1 "(9:00-10:00) minus (9:00-9:30) = (9:30-10:00)"
-func TestSample1_1(t *testing.T) {
+//TestGivenSample1_1 "(9:00-10:00) minus (9:00-9:30) = (9:30-10:00)"
+func TestGivenSample1_1(t *testing.T) {
 	input := "(9:00-10:00) minus (9:00-9:30)"
 	want := "(9:30-10:00)"
 	resultStr := StringifyResult(Solve(input))
@@ -24,8 +24,8 @@ func TestSample1_1(t *testing.T) {
 	}
 }
 
-//TestSample2 "(9:00-10:00) - (9:00-10:00) = ( )"
-func TestSample2(t *testing.T) {
+//TestGivenSample2 "(9:00-10:00) - (9:00-10:00) = ( )"
+func TestGivenSample2(t *testing.T) {
 	input := "(9:00-10:00) - (9:00-10:00)"
 	want := "()"
 	resultStr := StringifyResult(Solve(input))
@@ -34,8 +34,8 @@ func TestSample2(t *testing.T) {
 	}
 }
 
-//TestSample3 "(9:00-9:30) - (9:30-15:00) = (9:00-9:30)"
-func TestSample3(t *testing.T) {
+//TestGivenSample3 "(9:00-9:30) - (9:30-15:00) = (9:00-9:30)"
+func TestGivenSample3(t *testing.T) {
 	input := "(9:00-9:30) - (9:30-15:00)"
 	want := "(9:00-9:30)"
 	resultStr := StringifyResult(Solve(input))
@@ -44,8 +44,8 @@ func TestSample3(t *testing.T) {
 	}
 }
 
-//TestSample4 "(9:00-9:30, 10:00-10:30) - (9:15-10:15) = (9:00-9:15, 10:15-10:30)"
-func TestSample4(t *testing.T) {
+//TestGivenSample4 "(9:00-9:30, 10:00-10:30) - (9:15-10:15) = (9:00-9:15, 10:15-10:30)"
+func TestGivenSample4(t *testing.T) {
 	input := "(9:00-9:30, 10:00-10:30) - (9:15-10:15)"
 	want := "(9:00-9:15, 10:15-10:30)"
 	resultStr := StringifyResult(Solve(input))
@@ -54,8 +54,8 @@ func TestSample4(t *testing.T) {
 	}
 }
 
-//TestSample5 "(9:00-11:00, 13:00-15:00) - (9:00-9:15, 10:00-10:15, 12:30-16:00) = (9:15-10:00, 10:15-11:00)"
-func TestSample5(t *testing.T) {
+//TestGivenSample5 "(9:00-11:00, 13:00-15:00) - (9:00-9:15, 10:00-10:15, 12:30-16:00) = (9:15-10:00, 10:15-11:00)"
+func TestGivenSample5(t *testing.T) {
 	input := "(9:00-11:00, 13:00-15:00) - (9:00-9:15, 10:00-10:15, 12:30-16:00)"
 	want := "(9:15-10:00, 10:15-11:00)"
 	resultStr := StringifyResult(Solve(input))
@@ -114,6 +114,16 @@ func TestExtra5(t *testing.T) {
 	}
 }
 
+//TestExtra6 "(01:00-03:00, 05:00-07:00) minus (02:00-06:00) =(1:00-2:00, 6:00-7:00)"
+func TestExtra6(t *testing.T) {
+	input := "(01:00-03:00, 05:00-07:00) minus (02:00-06:00)"
+	want := "(1:00-2:00, 6:00-7:00)"
+	resultStr := StringifyResult(Solve(input))
+	if resultStr != want {
+		t.Errorf("Result incorrect, got: %v, wanted: %v", resultStr, want)
+	}
+}
+
 //TestMidnight1 "(23:00-3:00) minus (23:40-1:00) = (23:00-23:40, 1:00-3:00)"
 func TestMidnight1(t *testing.T) {
 	input := "(23:00-3:00) minus (23:40-1:00)"
@@ -138,16 +148,6 @@ func TestMidnight2(t *testing.T) {
 func TestMidnight3(t *testing.T) {
 	input := "(00:00-3:00) minus (02:00-03:00)"
 	want := "(00:00-2:00)"
-	resultStr := StringifyResult(Solve(input))
-	if resultStr != want {
-		t.Errorf("Result incorrect, got: %v, wanted: %v", resultStr, want)
-	}
-}
-
-//TestExtra9 "(01:00-03:00, 05:00-07:00) minus (02:00-06:00) =(1:00-2:00, 6:00-7:00)"
-func TestExtra9(t *testing.T) {
-	input := "(01:00-03:00, 05:00-07:00) minus (02:00-06:00)"
-	want := "(1:00-2:00, 6:00-7:00)"
 	resultStr := StringifyResult(Solve(input))
 	if resultStr != want {
 		t.Errorf("Result incorrect, got: %v, wanted: %v", resultStr, want)

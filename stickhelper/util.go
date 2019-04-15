@@ -1,8 +1,8 @@
+// Package stickhelper is used in solution for string utility functions such as splitting a string after or before the given value and struct enums
+// Credit to: https://www.dotnetperls.com/between-before-after-go
 package stickhelper
 
-import (
-	"strings"
-)
+import "strings"
 
 // After used to get substring after a string.
 func After(value string, a string) string {
@@ -25,10 +25,3 @@ func Before(value string, a string) string {
 	}
 	return value[0:pos]
 }
-
-/* https://www.dotnetperls.com/between-before-after-go */
-
-// StringifyResult is used to return sampled result as string ==> I need to move Stick type to here and that required quite a lot refactoring for public accessors etc
-// func StringifyResult(array []Stick) string {
-// 	return ""
-// }

@@ -1,3 +1,8 @@
+//Package solver contains the solution of the problem.
+//I simulated given problem as light and dark photon sort of stick game.
+//Timelines of the A time range as light sticks and timelines of the B time range as dark sticks.
+//When you overlap the dark sticks into light sticks; light sticks either shrink, diminish or sometimes cause a new light stick emerge.
+//After overlapping, remaining light sticks are basically the result
 package solver
 
 import (
@@ -25,7 +30,6 @@ func Solve(input string) []Stick {
 	// (01:00-03:00, 05:00:07) - (02:00:06) etc
 	overlapSticksOuterBoundries()
 	clearLightStickFromDiminishedLights()
-	// overlapSticks()
 	matchSticks()
 	return getResults()
 }
@@ -75,6 +79,7 @@ func StringifyResult(array []Stick) string {
 	return str.String()
 }
 
+// Matches the light sticks with dark sticks which results with modified light sticks
 func matchSticks() {
 	for i := 0; i < len(lightSticks); i++ {
 		// Overlapping midnight solution
@@ -82,7 +87,6 @@ func matchSticks() {
 		if light.endH < light.startH {
 			light.endH += 24
 		}
-
 		if light.status != stickhelper.Enum.Diminished {
 			for j := 0; j < len(darkSticks); j++ {
 				dark := darkSticks[j]
@@ -90,14 +94,14 @@ func matchSticks() {
 				if dark.endH < dark.startH {
 					dark.endH += 24
 				}
-				// Case 1
-				if isDarkInBetweenLight(light, dark) {
+				// Some of the bool controls are unnecessary but my wife says this way she can just read and understand easily
+				if isDarkInBetweenLight(light, dark) { // Case 1 where dark stick is between the boundries of light stick hence causing a new light stick creation
 					executeOrder12(light, dark, i)
-				} else if isDarkStartSmallerOrEqualToLightStart(light, dark) && isDarkEndPointBetweenLightLimits(light, dark) { // Case-2
+				} else if isDarkStartSmallerOrEqualToLightStart(light, dark) && isDarkEndPointBetweenLightLimits(light, dark) { // Case-2 where dark stick overlaps to the beginning of the light stick, causing the original stick to shrink
 					executeOrder24(light, dark, i)
-				} else if isDarkStartPointBetweenLightLimits(light, dark) && isDarkEndBiggerOrEqualToLightEnd(light, dark) { // Case-3
+				} else if isDarkStartPointBetweenLightLimits(light, dark) && isDarkEndBiggerOrEqualToLightEnd(light, dark) { // Case-3 where dark stick overlaps to the end of the light stick, causing the original stick to shrink
 					executeOrder42(light, dark, i)
-				} else if isDarkBeyondOrEqualToLight(light, dark) { //Case-4
+				} else if isDarkBeyondOrEqualToLight(light, dark) { // Case-4 where dark sticks compeletly overlaps the light stick which causes light stick's diminishing
 					executeOrder66(light, dark, i)
 				}
 			}
@@ -105,6 +109,7 @@ func matchSticks() {
 	}
 }
 
+// Creates the static sticks from input string where input string format is crucial!
 func createSticksFromInput(input string) {
 	validInput := createValidInput(input)
 	before := stickhelper.Before(validInput, " - ")
@@ -118,17 +123,7 @@ func createSticksFromInput(input string) {
 	createTheSticks(after, false)
 }
 
-// func overlapSticks(lightSticks []*Stick, darkSticks []*Stick) {
-func overlapSticks() {
-	for i := 0; i < len(lightSticks); i++ {
-		for j := 0; j < len(darkSticks); j++ {
-			hasOverlap := isOverlapping(lightSticks[i], darkSticks[j])
-			if hasOverlap {
-				merge(lightSticks[i], darkSticks[j], i)
-			}
-		}
-	}
-}
+// This method is used to create big light sticks where dark sticks tangle more than one light stick
 func overlapSticksOuterBoundries() {
 	// first sort the light array
 	for i := 0; i < len(darkSticks); i++ {
@@ -152,7 +147,7 @@ func overlapSticksOuterBoundries() {
 	}
 }
 
-//New methods
+// My wife was out of idea when i asked for function names
 func executeOrder12(light *Stick, dark *Stick, index int) {
 	// Choice 1) Create two new sticks and diminish the current one -> Didn't work because of dynamic adding to array and loop
 	// Choice 2) Shrink the original light stick to left and add new one stick
@@ -164,19 +159,19 @@ func executeOrder12(light *Stick, dark *Stick, index int) {
 	lightSticks = append(lightSticks, newStick)
 }
 func executeOrder24(light *Stick, dark *Stick, index int) {
-	// // Choice 1) Create new stick and diminish current stick => Doesn't worth the dynamic array hassle
+	// Choice 1) Create new stick and diminish current stick => Doesn't worth the dynamic array hassle
 	// newStick := &Stick{startH: dark.endH, startM: dark.endM, endH: light.endH, endM: light.endM, status: stickhelper.Enum.Lit}
 	// lightSticks = append(lightSticks, newStick)
 	// // lightSticks = append([]*Stick{newStick}, lightSticks...) // Need to prepend to prevent same objects adding to dynamic array and infinite loop
 	// diminishLightStickAtIndex(index - 1)
-	// // Choice 2) Shrink current stick
+	// Choice 2) Shrink current stick
 	lightSticks[index].startH = dark.endH
 	lightSticks[index].startM = dark.endM
 	lightSticks[index].status = stickhelper.Enum.Touched
 }
 
 func executeOrder42(light *Stick, dark *Stick, index int) {
-	// // Choice 1) Create new stick and diminish the current stick => Doesn't worth the dynamic array hassle
+	// Choice 1) Create new stick and diminish the current stick => Doesn't worth the dynamic array hassle
 	// newStick := &Stick{startH: light.startH, startM: light.startM, endH: dark.startH, endM: dark.startM, status: stickhelper.Enum.Lit}
 	// // lightSticks = append(lightSticks, newStick)
 	// lightSticks = append([]*Stick{newStick}, lightSticks...) // Need to prepend to prevent same objects adding to dynamic array and infinite loop
@@ -187,114 +182,12 @@ func executeOrder42(light *Stick, dark *Stick, index int) {
 	lightSticks[index].status = stickhelper.Enum.Touched
 }
 
+// Original function idea of my wife at midnight
 func executeOrder66(light *Stick, dark *Stick, index int) {
 	// Only 1 choice -> diminish the current light stick
 	diminishLightStickAtIndex(index)
 }
 
-//End of new methods
-func merge(light *Stick, dark *Stick, index int) {
-	// Handle overnight times like 23:00-02:00
-	if dark.startH > dark.endH {
-		dark.endH = dark.endH + 24
-	}
-	if light.startH > light.endH {
-		light.endH = light.endH + 24
-	}
-	if dark.startH == light.startH {
-		if dark.startM > light.startM {
-			if dark.endH <= light.endH {
-				// Stick divided to two
-				extraStick := &Stick{startH: dark.endH, startM: dark.endM, endH: light.endH, endM: light.endM, status: stickhelper.Enum.Lit}
-				lightSticks = append(lightSticks, extraStick)
-			} else {
-				//diminish the original light stick to the left
-				lightSticks[index].endH = dark.startH
-				lightSticks[index].endM = dark.startM
-				lightSticks[index].status = stickhelper.Enum.Touched
-			}
-		}
-	} else if dark.startH > light.startH {
-		if dark.endH == light.endH {
-			if dark.endM < light.endM {
-				// Stick divided to two
-				extraStick := &Stick{startH: dark.endH, startM: dark.endM, endH: light.endH, endM: light.endM}
-				lightSticks = append(lightSticks, extraStick)
-				//diminish the original light stick to the left
-				lightSticks[index].endH = dark.startH
-				lightSticks[index].endM = dark.startM
-				lightSticks[index].status = stickhelper.Enum.Touched
-			} else {
-				//light stick diminished completely
-				lightSticks[index].status = stickhelper.Enum.Diminished
-			}
-		} else if dark.endH > light.endH {
-			//diminish the original light stick to the left
-			lightSticks[index].endH = dark.startH
-			lightSticks[index].endM = dark.startM
-			lightSticks[index].status = stickhelper.Enum.Touched
-		}
-	} else {
-		// Dark stick is longer on both left and right side that diminishes light stick completely
-		lightSticks[index].status = stickhelper.Enum.Diminished
-	}
-	if dark.endH <= light.endH {
-		if dark.startH >= light.startH {
-			// Stick divided to two
-			extraStick := &Stick{startH: dark.endH, startM: dark.endM, endH: light.endH, endM: light.endM, status: stickhelper.Enum.Lit}
-			if !isAlreadyExist(extraStick) {
-				lightSticks = append(lightSticks, extraStick)
-			}
-			//diminish the original light stick to the left
-			lightSticks[index].endH = dark.startH
-			lightSticks[index].endM = dark.startM
-			lightSticks[index].status = stickhelper.Enum.Touched
-		} else {
-			lightSticks[index].startH = dark.endH
-			lightSticks[index].startM = dark.endM
-			lightSticks[index].status = stickhelper.Enum.Touched
-		}
-	}
-}
-func isOverlapping(light *Stick, dark *Stick) bool {
-	// If dark stick is longer or equal to light stick, light stick diminishes
-	if dark.startH <= light.startH && dark.endH >= light.endH && light.status != stickhelper.Enum.Touched {
-		light.status = stickhelper.Enum.Diminished
-	}
-	isStartOverlaped := false
-	isEndOverlaped := false
-	if dark.startH > light.startH && dark.startH <= dark.endH {
-		isStartOverlaped = true
-	} else if dark.startH == light.startH {
-		if dark.startM >= light.startM {
-			isStartOverlaped = true
-		}
-	}
-	if light.startH <= dark.endH && light.endH <= dark.endH {
-		if light.startM <= dark.endM && light.endM <= light.endM {
-			isStartOverlaped = true
-		}
-	}
-	if dark.endH < light.endH {
-		isEndOverlaped = true
-	} else if dark.endH == light.endH {
-		if dark.endM <= light.endM {
-			isEndOverlaped = true
-		}
-	}
-	if dark.startH == light.startH && dark.startM >= light.startM {
-		isEndOverlaped = true
-	}
-	return isStartOverlaped && isEndOverlaped
-}
-func isAlreadyExist(stick *Stick) bool {
-	for _, item := range lightSticks {
-		if stick.startH == item.startH && stick.startM == item.startM && stick.endH == item.endH && stick.endM == item.endM && stick.status == item.status {
-			return true
-		}
-	}
-	return false
-}
 func createTheSticks(input string, addToLightSticks bool) {
 	removedParentheses := strings.Replace(input, "(", "", -1)
 	removedParentheses = strings.Replace(removedParentheses, ")", "", -1)
@@ -334,6 +227,7 @@ func createStick(inputStr string) *Stick {
 	return &Stick{startH: int8(startHour), startM: int8(startMinute), endH: int8(endHour), endM: int8(endMinute), status: stickhelper.Enum.Lit}
 }
 
+// Converts minus string to - operation. Can be improved
 func createValidInput(input string) string {
 	var str strings.Builder
 	newDinput := strings.TrimSpace(input)
@@ -349,11 +243,12 @@ func createValidInput(input string) string {
 	return input
 }
 
-//PrintResults prints the result array in sampled string format - Obsolute
+//PrintResults prints the result array in sampled string format
 func PrintResults(sticks []Stick) {
 	fmt.Print("Result: ", StringifyResult(sticks))
 }
 
+//Returns the final stick result array
 func getResults() []Stick {
 	hasOvernightValue := false
 	for _, item := range lightSticks {
@@ -389,8 +284,6 @@ func isDarkStartBiggerThanLightStart(light *Stick, dark *Stick) bool {
 	}
 	return false
 }
-
-// For Case 1
 func isDarkEndSmallerThanLightEnd(light *Stick, dark *Stick) bool {
 	if dark.endH < light.endH || (dark.endH == light.endH && dark.endM < light.endM) {
 		return true
@@ -438,6 +331,7 @@ func isDarkBeyondOrEqualToLight(light *Stick, dark *Stick) bool {
 	}
 	return isBiggerOrEqualLeft && isBiggerOrEqualRight
 }
+
 func diminishLightStickAtIndex(index int) {
 	lightSticks[index].status = stickhelper.Enum.Diminished
 	lightSticks[index].startH = 0
@@ -466,13 +360,4 @@ func isDarkStartPointBetweenLightLimits(light *Stick, dark *Stick) bool {
 		isLesserOrEqualRight = true
 	}
 	return isBiggerOrEqualLeft && isLesserOrEqualRight
-}
-
-//  End of Usefull area
-
-func isDarkEndBiggerOrEqualToLightStart(light *Stick, dark *Stick) bool {
-	if dark.endH > light.startH || (dark.startH == light.startM && dark.startM > light.startM) {
-		return true
-	}
-	return false
 }
